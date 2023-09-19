@@ -29,16 +29,18 @@ public class MachineController {
     }
 
     private List<Machine> findOutliers(List<Machine> machines, double threshold) {
-        double sum = 0;
-        int index = 0;
+        AtomicInteger counter = new AtomicInteger(0);
         List<Machine> outliers = new ArrayList<>();
         int numberOfMachines = machines.size();
         double[] machineAgesArray = new double[numberOfMachines];
 
-        for(Machine machine : machines){
+        double sum = machines.stream().mapToDouble(machine1 -> Double.parseDouble(machine1.getAge().split(" ")[0])).sum();
+        LOGGER.info("SUM: "+sum);
+
+
+        machines.stream().forEach(machine -> {
             String[] machineValArray = machine.getAge().split(" ");
             int machineAge = Integer.parseInt(machineValArray[0].trim());
-
             String durationUnit = machineValArray[1].trim(); // Assuming 'days' as the default age unit
             switch(durationUnit)
             {
@@ -55,10 +57,8 @@ public class MachineController {
 
                 default :
             }
-            sum += machineAge;
-            machineAgesArray[index] = machineAge;
-            index++;
-        }
+            machineAgesArray[counter.getAndIncrement()] = machineAge;
+        });
 
         double mean = sum / numberOfMachines;
         LOGGER.info(String.format("Mean: %s", mean));
@@ -66,7 +66,8 @@ public class MachineController {
         double standardDeviation = getStandardDeviation(machineAgesArray);
         LOGGER.info(String.format("Standard deviation: %s", standardDeviation));
 
-        AtomicInteger counter = new AtomicInteger(0);
+        // resetting counter to 0 before reusing it
+        counter.set(0);
         machines.stream().forEach(machine -> {
             double machineAge = machineAgesArray[counter.getAndIncrement()];
             LOGGER.info(String.format("MACHINE AGE: %s", machineAge));
