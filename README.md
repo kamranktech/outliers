@@ -15,8 +15,9 @@ HOW TO TEST:
 - Unzip given archive (or clone from https://github.com/kamranktech/outliers)
 - Run "mvn clean install && mvn spring-boot:run" from project root (Alternatively, you can run AFApplication class)
 - Use the postman collection (AF_Collection.postman_collection.json) placed in postman folder to test the outlier endpoint
+- Few tests have been added too for users' convenience
 
-Please feel free to correct me, suggest improvements or even make changes directly on the given github repo.
+Please feel free to correct me, suggest improvements or even make changes directly onto the given github repo.
 
 Many thanks,
 Kamran.
