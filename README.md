@@ -11,9 +11,10 @@ PROJECT DETAILS:
 - Restful API microservice
 
 HOW TO TEST:
+
 - Unzip given archive (or clone from https://github.com/kamranktech/outliers)
 - Run "mvn clean install && mvn spring-boot:run" from project root (Alternatively, you can run AFApplication class)
-- Use the postman collection under postman folder to test the outlier endpoint
+- Use the postman collection (AF_Collection.postman_collection.json) placed in postman folder to test the outlier endpoint
 
 Please feel free to correct me, suggest improvements or even make changes directly on the given github repo.
 
