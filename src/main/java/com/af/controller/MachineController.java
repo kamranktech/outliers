@@ -17,8 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MachineController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MachineController.class);
+    public static final String SPACE = " ";
+    public static final String DAYS = "days";
+    public static final String MONTHS = "months";
+    public static final String YEARS = "years";
+    public static final int ZERO_VALUE = 0;
 
-    @GetMapping("/getOutliers")
+    @GetMapping("/outliers")
     public List<Machine> getOutliers(@RequestBody List<Machine> machines, @RequestParam double threshold) {
         try {
              return findOutliers(machines, threshold);
@@ -29,29 +34,31 @@ public class MachineController {
     }
 
     private List<Machine> findOutliers(List<Machine> machines, double threshold) {
-        AtomicInteger counter = new AtomicInteger(0);
+        AtomicInteger counter = new AtomicInteger(ZERO_VALUE);
         List<Machine> outliers = new ArrayList<>();
         int numberOfMachines = machines.size();
         double[] machineAgesArray = new double[numberOfMachines];
 
-        double sum = machines.stream().mapToDouble(machine1 -> Double.parseDouble(machine1.getAge().split(" ")[0])).sum();
-        LOGGER.info("SUM: "+sum);
+        // calculating sum loping over stream of machines
+        double sum = machines.stream().mapToDouble(machine -> Double.parseDouble(machine.getAge().split(SPACE)[ZERO_VALUE])).sum();
+        LOGGER.info(String.format("SUM: %s", sum));
 
 
+        // looping over machines to determine machine ages (assuming 'days' are the standard age unit)
         machines.stream().forEach(machine -> {
-            String[] machineValArray = machine.getAge().split(" ");
-            int machineAge = Integer.parseInt(machineValArray[0].trim());
+            String[] machineValArray = machine.getAge().split(SPACE);
+            int machineAge = Integer.parseInt(machineValArray[ZERO_VALUE].trim());
             String durationUnit = machineValArray[1].trim(); // Assuming 'days' as the default age unit
             switch(durationUnit)
             {
-                case "days" :
+                case DAYS:
                     break;
 
-                case "months" :
+                case MONTHS:
                     machineAge = machineAge * 30; // approximate conversion to days from months
                     break;
 
-                case "years" :
+                case YEARS:
                     machineAge = machineAge * 365; // approximate conversion to days from years
                     break;
 
@@ -61,13 +68,15 @@ public class MachineController {
         });
 
         double mean = sum / numberOfMachines;
-        LOGGER.info(String.format("Mean: %s", mean));
+        LOGGER.info(String.format("MEAN: %s", mean));
         LOGGER.info("===================\n\n");
         double standardDeviation = getStandardDeviation(machineAgesArray);
-        LOGGER.info(String.format("Standard deviation: %s", standardDeviation));
+        LOGGER.info(String.format("STANDARD DEVIATION: %s", standardDeviation));
 
         // resetting counter to 0 before reusing it
-        counter.set(0);
+        counter.set(ZERO_VALUE);
+
+        // calculating Z-score and finding outliers
         machines.stream().forEach(machine -> {
             double machineAge = machineAgesArray[counter.getAndIncrement()];
             LOGGER.info(String.format("MACHINE AGE: %s", machineAge));
@@ -80,6 +89,7 @@ public class MachineController {
         return outliers;
     }
 
+    // method to calculate standard deviation
     private double getStandardDeviation(double[] numArray)
     {
         double sum = 0.0;

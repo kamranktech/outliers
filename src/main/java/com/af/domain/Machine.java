@@ -1,9 +1,16 @@
 package com.af.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class Machine {
 
     private Long id;
     private String age;
+
+
+    public Machine(){
+
+    }
 
     public Machine(Long id, String age) {
         this.id = id;
